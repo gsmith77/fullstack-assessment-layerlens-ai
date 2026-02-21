@@ -19,10 +19,6 @@ import {
   Paper,
   Typography,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -174,26 +170,17 @@ export default function Home() {
                   }
                   placeholder="Enter job name"
                   fullWidth
-                  required
                 />
-                <FormControl fullWidth required>
-                  <InputLabel id="job_type-label">Job Type *</InputLabel>
-                  <Select
-                    labelId="job_type-label"
-                    id="job_type"
-                    value={formData.job_type}
-                    label="Job Type *"
-                    onChange={(e) =>
-                      setFormData({ ...formData, job_type: e.target.value })
-                    }
-                  >
-                    {JOB_TYPES.map((type) => (
-                      <MenuItem key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  id="job_type"
+                  label={`Job Type * (valid job types: ${JOB_TYPES.join(', ')})`}
+                  value={formData.job_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, job_type: e.target.value })
+                  }
+                  placeholder="Enter job name"
+                  fullWidth
+                />
                 <TextField
                   id="config"
                   label="Config (JSON)"
