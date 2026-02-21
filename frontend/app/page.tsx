@@ -11,6 +11,7 @@ import {
   CreateJobRequest,
   canBeCancelled,
   canBeRetried,
+  hasActiveJobs,
 } from "@/utils/interfaces";
 
 const JOB_TYPES: JobType[] = ["process", "analyze", "export"];
@@ -36,9 +37,14 @@ export default function Home() {
   const [configJson, setConfigJson] = useState("{}");
   const [error, setError] = useState<string | null>(null);
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.jobs(page, 10),
     queryFn: () => fetchJobs(page, 10),
+    // Real-time updates: poll every 2s while any job on this page is active
+    refetchInterval: (query) => {
+      const jobs = query.state.data?.jobs ?? [];
+      return hasActiveJobs(jobs) ? 2000 : false;
+    },
   });
 
   const createMutation = useMutation({
@@ -206,15 +212,6 @@ export default function Home() {
         )}
 
         <div className="bg-white rounded-lg shadow-md">
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Jobs</h2>
-            <button
-              onClick={() => refetch()}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Refresh
-            </button>
-          </div>
 
           {isLoading && (
             <div className="p-8 text-center text-gray-500">Loading jobs...</div>
