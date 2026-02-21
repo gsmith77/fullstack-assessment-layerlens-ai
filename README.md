@@ -292,3 +292,4 @@ Asking clarifying questions is encouraged and will not affect your evaluation.
 - The frontend has React Query DevTools enabled (bottom-left corner)
 
 Good luck!
+# fullstack-assessment-layerlens-ai

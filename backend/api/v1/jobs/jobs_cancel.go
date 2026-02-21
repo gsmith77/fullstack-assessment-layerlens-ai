@@ -10,6 +10,7 @@ import (
 // cancelJob handles POST /api/v1/jobs/{id}/cancel
 // NOTE: This is a skeleton - candidate should implement the service method
 func (h *Handler) cancelJob(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("cancelJob")
 	vars := mux.Vars(r)
 	id := vars["id"]
 
