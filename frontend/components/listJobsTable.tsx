@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Job, JobStatus, canBeCancelled, canBeRetried, } from "@/utils/interfaces"
+import { Job, JobStatus, canBeCancelled, canBeRetried, hasActiveJobs } from "@/utils/interfaces"
 import { cancelJob, retryJob } from "@/utils/mutations"
 import { queryKeys, fetchJobs } from "@/utils/queries"
 import { Paper, Box, Typography, CircularProgress, Alert, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Chip, Stack, Button, TablePagination } from "@mui/material"
@@ -21,36 +21,41 @@ const STATUS_CHIP_COLOR: Record<
 };
 
 export const ListJobsTable = () => {
-    const queryClient = useQueryClient();
-    const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
 
-    const { data, isLoading, isError, refetch } = useQuery({
-      queryKey: queryKeys.jobs(page, ROWS_PER_PAGE),
-      queryFn: () => fetchJobs(page, ROWS_PER_PAGE),
-    });
-  
-    const cancelMutation = useMutation({
-      mutationFn: cancelJob,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      },
-    });
-  
-    const retryMutation = useMutation({
-      mutationFn: retryJob,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      },
-    });
-  
-    const handleTablePageChange = (
-      _event: React.MouseEvent<HTMLButtonElement> | null,
-      newPage: number
-    ) => {
-      setPage(newPage + 1);
-    };
-  
-    const totalCount = data?.total ?? 0;
+  const { data, isLoading, isError } = useQuery({
+    queryKey: queryKeys.jobs(page, ROWS_PER_PAGE),
+    queryFn: () => fetchJobs(page, ROWS_PER_PAGE),
+    // Real-time updates: poll every 2s while any job on this page is active
+    refetchInterval: (query) => {
+      const jobs = query.state.data?.jobs ?? [];
+      return hasActiveJobs(jobs) ? 2000 : false;
+    },
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: cancelJob,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+  });
+
+  const retryMutation = useMutation({
+    mutationFn: retryJob,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+  });
+
+  const handleTablePageChange = (
+    _event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage + 1);
+  };
+
+  const totalCount = data?.total ?? 0;
 
   return (
       <Paper>
@@ -68,9 +73,6 @@ export const ListJobsTable = () => {
         <Typography variant="h6" component="h2">
           Jobs
         </Typography>
-        <Button size="small" onClick={() => refetch()} color="primary">
-          Refresh
-        </Button>
       </Box>
 
       {isLoading && (
