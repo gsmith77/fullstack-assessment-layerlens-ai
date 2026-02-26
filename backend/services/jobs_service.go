@@ -42,6 +42,11 @@ type JobFilter struct {
 	Limit int
 }
 
+// kafkaPublisher is the interface for publishing messages (allows mocking in tests)
+type kafkaPublisher interface {
+	Publish(ctx context.Context, topic string, message interface{}) error
+}
+
 // JobsService interface defines the methods for job business logic
 type JobsService interface {
 	CreateJob(ctx context.Context, req CreateJobRequest) (*models.Job, error)
@@ -53,11 +58,11 @@ type JobsService interface {
 
 type jobsService struct {
 	repo     repositories.JobsRepository
-	producer *KafkaProducer
+	producer kafkaPublisher
 }
 
 // NewJobsService creates a new jobs service
-func NewJobsService(repo repositories.JobsRepository, producer *KafkaProducer) JobsService {
+func NewJobsService(repo repositories.JobsRepository, producer kafkaPublisher) JobsService {
 	return &jobsService{
 		repo:     repo,
 		producer: producer,
