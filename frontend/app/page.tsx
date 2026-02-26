@@ -1,19 +1,30 @@
-export default function Home() {
-  return (
-    <main className="min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-4">Job Processing System</h1>
-      <p className="text-gray-600 mb-8">
-        Welcome! Your task is to build the UI for this job processing system.
-      </p>
+"use client";
 
-      {/* TODO: Candidate implements their UI here */}
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-500">
-        <p>Your components go here.</p>
-        <p className="text-sm mt-2">
-          Check out <code className="bg-gray-100 px-1 rounded">utils/</code> for
-          pre-built API calls and TypeScript interfaces.
-        </p>
-      </div>
-    </main>
+import { useState } from "react";
+
+import { Box } from "@mui/material";
+import { CreateForm, ListJobsHeader, ListJobsTable } from "@/components";
+
+export default function Home() {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  return (
+    <Box
+      component="main"
+      sx={{
+        minHeight: "100vh",
+        py: 3,
+        px: 2,
+        bgcolor: "grey.100",
+      }}
+    >
+      <Box sx={{ maxWidth: 960, mx: "auto" }}>
+        <ListJobsHeader showCreateForm={showCreateForm} setShowCreateForm={setShowCreateForm} />
+
+        {showCreateForm && <CreateForm setShowCreateForm={setShowCreateForm} />}
+
+        <ListJobsTable />
+      </Box>
+    </Box>
   );
 }

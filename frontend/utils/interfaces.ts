@@ -59,3 +59,11 @@ export function canBeRetried(job: Job): boolean {
 export function isTerminalStatus(status: JobStatus): boolean {
   return status === 'completed' || status === 'failed' || status === 'cancelled';
 }
+
+// Active statuses that indicate the job is still in progress (for polling)
+const ACTIVE_STATUSES: JobStatus[] = ['pending', 'processing', 'cancelling'];
+
+/** Returns true if any job in the list is still active (not yet completed/failed/cancelled). */
+export function hasActiveJobs(jobs: Job[]): boolean {
+  return jobs.some((j) => ACTIVE_STATUSES.includes(j.status));
+}

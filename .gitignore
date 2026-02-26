@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build / runtime
+*.exe
+*.dll
+*.so
+*.dylib
+/dist/
+/build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and debug
+*.log
+npm-debug.log*
+.npm
+
+# Go
+vendor/
+
+# Misc
+*.test
+.cache/
